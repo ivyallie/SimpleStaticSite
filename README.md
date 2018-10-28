@@ -14,5 +14,5 @@ files that have the content of your pages. In the same directory as the script, 
 file from Pages/, merge them with the template pages, and write the results to Output/. Markdown will, of course, be converted to
 HTML en route.
 
-#Still to do
+# Still to do
 I'm sure more features will be added once I actually start using this.
