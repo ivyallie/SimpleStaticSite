@@ -14,5 +14,10 @@ files that have the content of your pages. In the same directory as the script, 
 file from Pages/, merge them with the template pages, and write the results to Output/. Markdown will, of course, be converted to
 HTML en route.
 
+## Configuration options
+If you add a .yaml file to the directory where the script is, you can take advantage of some configuration options. At the moment, these are:
+- title: The title stub, which will be added to the beginning of all page titles
+- separator: A string placed between the title stub and the rest of the title
+
 ## Still to do
 I'm sure more features will be added once I actually start using this.
