@@ -1,2 +1,10 @@
-title: 'Your Title Here'
-separator: ' :: '
+title: "Your Title Here"
+separator: ' - '
+structures:
+  default: "Template_Upper.html + <div class='textframe'> + <h1>{{title}}</h1> + content + </div> + Template_Lower.html"
+  minimal: "Template_Upper.html + content + Template_Lower.html"
+
+extra_dirs:
+  assets/images: images
+  assets/js: js
+  assets/style: style
