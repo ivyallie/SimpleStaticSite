@@ -12,6 +12,7 @@ from io import StringIO
 import pdb
 import shutil
 import re
+#import pudb
 
 def get_config():
     yaml_files = get_files_by_type('yaml', './')
@@ -105,6 +106,15 @@ def get_structure(structurename):
 def process_structure(structuredef):
     structure_list = structuredef.split('+')
     return [f.strip() for f in structure_list]
+
+def parse_ifline(ifline):
+    #An ifline is like: if(case)(then)(else)
+    ifline = re.sub(r"<!--|-->", "", ifline).strip()
+    ifline_parsed = re.findall(r"\(([^()]*)\)", ifline)
+    print(ifline_parsed)
+    if len(ifline_parsed) != 3:
+        print('Malformed ifline',ifline)
+    return ifline_parsed
    
 
 def process_source(directory):
@@ -121,6 +131,7 @@ def process_source(directory):
             html = initial['content']
         else:
             html = md.markdown(initial['content'], extensions=['def_list'])
+            
             html = assign_ids_to_headings(html)
         if 'title' in initial['meta']:
             title = f"{initial['meta']['title']}{separator}{title_stub}"
@@ -145,7 +156,16 @@ def process_source(directory):
 
 
         content_soup = BeautifulSoup(html, 'html.parser')
+
         textbox = StringIO()
+
+        def handle_ifline(ifline):
+            try:
+                var = initial['meta'][ifline[0]] #See if the variable is set
+                textbox.write(ifline[1]) #Write the line if so
+            except KeyError:
+                textbox.write(ifline[2]) #Write the alternative if not
+            
         for s in structure:
             if s == "content":
                 #soup.append(content_soup)
@@ -153,12 +173,18 @@ def process_source(directory):
                     textbox.write(line)
             elif s.startswith("<"):
                 textbox.write(s)
+            elif s.startswith("if"): #this is an "ifline"
+                ifline = parse_ifline(s)
+                handle_ifline(ifline)
             else:
                 filepath = os.path.join(templates,s)
                 with open(filepath, 'r') as f:
                     #soup2 = BeautifulSoup(f.read(), 'html.parser')
                     #soup.append(soup2)
                     for line in f:
+                        if line.lstrip().startswith('<!-- if'):
+                            ifline = parse_ifline(line)
+                            handle_ifline(ifline)
                         textbox.write(line)
 
         text_with_substitutions = StringIO()
